@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +14,37 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function SettingsDialog() {
+  const [username, setUsername] = useState('');
+  const [initialUsername, setInitialUsername] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    // Load username from localStorage when component mounts
+    const savedUsername = localStorage.getItem('userName') || '';
+    setUsername(savedUsername);
+    setInitialUsername(savedUsername);
+  }, []);
+
+  const hasChanges = username !== initialUsername;
+
+  const handleSave = () => {
+    if (!hasChanges) return;
+    
+    setIsSaving(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      localStorage.setItem('userName', username.trim());
+      setInitialUsername(username);
+      setSaveSuccess(true);
+      setIsSaving(false);
+      
+      // Hide success message after 2 seconds
+      setTimeout(() => setSaveSuccess(false), 2000);
+    }, 500);
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -27,10 +59,28 @@ export function SettingsDialog() {
           <DialogTitle>Account Settings</DialogTitle>
         </DialogHeader>
 
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 relative">
+          {saveSuccess && (
+            <div className="absolute -top-2 left-0 right-0 flex justify-center">
+              <div className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
+                Settings saved successfully!
+              </div>
+            </div>
+          )}
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
-            <Input id="username" defaultValue="@raven" className="col-span-3" />
+            <Input 
+              id="username" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleSave();
+                }
+              }}
+              className="col-span-3" 
+            />
           </div>
           
           <div className="space-y-2">
@@ -41,9 +91,20 @@ export function SettingsDialog() {
             <p className="text-sm text-muted-foreground">
               Thank you for your support and contributions!
             </p>
-            <p className="text-xs text-center text-muted-foreground pt-4">
-              Made with ❤️ by Raven
-            </p>
+            <div className="pt-4 flex flex-col items-center space-y-4">
+              {hasChanges && (
+                <Button 
+                  onClick={handleSave}
+                  disabled={isSaving}
+                  className="w-full"
+                >
+                  {isSaving ? 'Saving...' : 'Save Changes'}
+                </Button>
+              )}
+              <p className="text-xs text-center text-muted-foreground">
+                Made with ❤️ by Raven
+              </p>
+            </div>
           </div>
         </div>
       </DialogContent>
