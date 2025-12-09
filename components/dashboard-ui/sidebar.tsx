@@ -1,10 +1,13 @@
 "use client"
 
 import type React from "react"
-import { LayoutDashboard, CreditCard, Wallet, PieChart, Target, Settings, HelpCircle, Menu } from "lucide-react"
+import { LayoutDashboard, CreditCard, Wallet, PieChart, Target, Menu } from "lucide-react"
 import Link from "next/link"
 import { useState } from "react"
 import Image from "next/image"
+import { HelpDialog } from "./help-dialog"
+import { SettingsDialog } from "./settings-dialog"
+import { Button } from "@/components/ui/button"
 
 export default function Sidebar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -88,13 +91,9 @@ export default function Sidebar() {
             </div>
           </div>
 
-          <div className="px-4 py-6 border-t border-border space-y-1">
-            <NavItem href="#" icon={Settings}>
-              Settings
-            </NavItem>
-            <NavItem href="#" icon={HelpCircle}>
-              Help
-            </NavItem>
+          <div className="px-4 py-6 border-t border-border space-y-2">
+            <SettingsDialog />
+            <HelpDialog />
           </div>
         </div>
       </nav>
