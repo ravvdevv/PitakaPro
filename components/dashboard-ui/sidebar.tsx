@@ -5,8 +5,8 @@ import { LayoutDashboard, CreditCard, Wallet, PieChart, Target, Menu } from "luc
 import Link from "next/link"
 import { useState } from "react"
 import Image from "next/image"
-import { HelpDialog } from "./help-dialog"
-import { SettingsDialog } from "./settings-dialog"
+import { HelpDialog } from "@/components/dashboard-ui/help-dialog"
+import { SettingsDialog } from "@/components/dashboard-ui/settings-dialog"
 import { Button } from "@/components/ui/button"
 
 export default function Sidebar() {
