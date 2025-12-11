@@ -1,31 +1,24 @@
-<div align="center" style="padding: 3rem 1.5rem 2rem; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 0 0 1rem 1rem; margin-bottom: 2rem;">
-  <div style="max-width: 800px; margin: 0 auto; padding: 2rem; background: white; border-radius: 1rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
-    <div style="margin-bottom: 1.5rem;">
-      <img 
-        src="https://raw.githubusercontent.com/ravvdevv/PitakaPro/main/public/pitaka-pro-logo.png" 
-        alt="PitakaPro Logo" 
-        width="180"
-        style="display: block; margin: 0 auto 1.5rem; filter: invert(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.1)); transition: all 0.3s ease;"
-        onmouseover="this.style.filter='invert(0.5) sepia(1) saturate(5) hue-rotate(175deg) drop-shadow(0 4px 8px rgba(59, 130, 246, 0.2))'"
-        onmouseout="this.style.filter='invert(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.1))'"
-      >
-      <h1 style="margin: 0; font-size: 2.75rem; font-weight: 800; letter-spacing: -0.025em; color: #1e293b;">PitakaPro</h1>
-      <h3 style="margin: 0.75rem 0 1.5rem; font-size: 1.25rem; font-weight: 400; color: #475569; max-width: 600px; line-height: 1.5;">✨ Modern Personal Finance Management</h3>
-      
-      <div style="display: flex; justify-content: center; gap: 0.75rem; margin: 1.5rem 0; flex-wrap: wrap;">
-        [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-        [![Next.js](https://img.shields.io/badge/Next.js-13.4+-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
-        [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-        [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-      </div>
+<div align="center" style="padding: 2rem 1rem 1.5rem;">
+  <div style="margin-bottom:">
+    <img 
+      src="https://raw.githubusercontent.com/ravvdevv/PitakaPro/main/public/pitaka-pro-logo.png" 
+      alt="PitakaPro Logo" 
+      width="180"
+      style="display: block; margin: 0 auto 1.25rem; filter: invert(100%); transition: all 0.3s ease;"
+      onmouseover="this.style.filter='invert(0.5) sepia(1) saturate(5) hue-rotate(175deg)'"
+      onmouseout="this.style.filter='invert(0%)'"
+    > <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">PitakaPro</h1>
+    <h3 style="margin: 0.5rem 0 1.5rem; font-weight: 400;">✨ Modern Personal Finance Management</h3>
+   
+  
+  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+  [![Next.js](https://img.shields.io/badge/Next.js-13.4+-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-      <p style="margin: 1.5rem 0; font-size: 1.1rem; line-height: 1.6; color: #64748b;">Take control of your finances with PitakaPro - A beautiful, intuitive, and powerful personal finance management application built with modern web technologies. Track expenses, manage budgets, and achieve your financial goals with ease.</p>
-      
-      <div style="margin-top: 1.5rem; font-size: 1.05rem;">
-        [🚀 Live Demo](https://pitaka-pro.vercel.app/) | [📖 Documentation](#) | [💡 Feature Request](https://github.com/ravvdevv/PitakaPro/issues/new?template=feature_request.md)
-      </div>
-    </div>
-  </div>
+  <p>Take control of your finances with PitakaPro - A beautiful, intuitive, and powerful personal finance management application built with modern web technologies. Track expenses, manage budgets, and achieve your financial goals with ease.</p>
+  
+  [🚀 Live Demo](https://pitaka-pro.vercel.app/) | [📖 Documentation](#) | [💡 Feature Request](https://github.com/ravvdevv/PitakaPro/issues/new?template=feature_request.md)
 </div>
 
 ## ✨ Features
@@ -74,16 +67,6 @@
   <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel">
 </div>
 
-| Category          | Technologies                                                                 |
-|-------------------|-----------------------------------------------------------------------------|
-| **Frontend**      | Next.js 15, React 18, TypeScript                                           |
-| **Styling**       | Tailwind CSS, Radix UI, CSS Modules                                        |
-| **State**         | React Context, React Query                                                 |
-| **Forms**         | React Hook Form, Zod Validation                                            |
-| **Icons**         | Lucide Icons                                                               |
-| **Build Tool**    | Bun (faster alternative to npm/yarn)                                       |
-| **Deployment**    | Vercel (optimized for Next.js)                                             |
-| **Code Quality**  | ESLint, Prettier, TypeScript strict mode                                   |
 
 ## 🚀 Getting Started
 
@@ -216,6 +199,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Built with [Next.js](https://nextjs.org/)
 - UI components powered by [Radix UI](https://www.radix-ui.com/)
-- Icons from [Lucide](https://lucide.dev/)
-- Inspired by modern financial applications
-- Thanks to all contributors who have helped improve this project
+- Icons from [Lucide](https://lucide.dev/) PitakaPro
