@@ -81,6 +81,10 @@ PitakaPro is a modern, feature-rich personal finance management application buil
 
 ## Available Scripts
 
+- `bun dev` - Start the development server
+- `bun build` - Build for production
+- `bun start` - Start production server
+- `bun lint` - Run ESLint
 - `pnpm dev` - Start the development server
 - `pnpm build` - Build for production
 - `pnpm start` - Start production server
