@@ -1,9 +1,10 @@
 "use client"
-import { useState, useEffect, useRef } from "react"; // Import useRef
+import { useState, useEffect } from "react";
 import Layout from "@/components/dashboard-ui/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import AccountForm from "@/components/dashboard-ui/account-form"; // Import the new form
+import AccountForm from "@/components/dashboard-ui/account-form";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Account = {
     id: number;
@@ -21,16 +22,16 @@ type Transaction = {
     account?: string;
 };
 
-// Helper function to get initial accounts from localStorage
-const getInitialAccounts = (): Account[] => {
+// Helper function to get initial transactions from localStorage  
+const getInitialTransactions = (): Transaction[] => {
   if (typeof window !== 'undefined') {
-    const storedAccounts = localStorage.getItem("accounts");
-    if (storedAccounts) {
+    const storedTransactions = localStorage.getItem("transactions");
+    if (storedTransactions) {
       try {
-        return JSON.parse(storedAccounts);
+        return JSON.parse(storedTransactions);
       } catch (e) {
-        console.error("Failed to parse accounts from localStorage", e);
-        localStorage.removeItem("accounts"); // Clear corrupted data
+        console.error("Failed to parse transactions from localStorage", e);
+        localStorage.removeItem("transactions");
       }
     }
   }
@@ -38,13 +39,14 @@ const getInitialAccounts = (): Account[] => {
 };
 
 export default function AccountsPage() {
-    const [accounts, setAccounts] = useState<Account[]>(getInitialAccounts());
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
+    // Use custom hook for better performance
+    const [accounts, setAccounts] = useLocalStorage<Account[]>("accounts", []);
+    const [transactions, setTransactions] = useState<Transaction[]>(getInitialTransactions());
     const [editingAccount, setEditingAccount] = useState<Account | null>(null);
     const [showAccountForm, setShowAccountForm] = useState(false);
 
     const handleAddAccountClick = () => {
-        setEditingAccount(null); // Ensure no account is being edited
+        setEditingAccount(null);
         setShowAccountForm(true);
     };
 
@@ -52,14 +54,6 @@ export default function AccountsPage() {
         setEditingAccount(account);
         setShowAccountForm(true);
     };
-
-    // Use a ref to hold the latest accounts state
-    const accountsRef = useRef(accounts);
-    useEffect(() => {
-      accountsRef.current = accounts;
-    }, [accounts]);
-
-
 
     // Load transactions from localStorage on mount
     useEffect(() => {
@@ -69,29 +63,11 @@ export default function AccountsPage() {
                 setTransactions(JSON.parse(storedTransactions));
             } catch (e) {
                 console.error("Failed to parse transactions from localStorage", e);
-                localStorage.removeItem("transactions"); // Clear corrupted data
-                setTransactions([]); // Set to empty array to avoid further errors
+                localStorage.removeItem("transactions");
+                setTransactions([]);
             }
         }
     }, []);
-
-    // Save accounts to localStorage whenever 'accounts' state changes
-    useEffect(() => {
-        localStorage.setItem("accounts", JSON.stringify(accounts));
-    }, [accounts]);
-
-    // Add beforeunload listener to ensure accounts are saved on page close/navigate
-    useEffect(() => {
-        const handleBeforeUnload = () => {
-            localStorage.setItem("accounts", JSON.stringify(accountsRef.current));
-        };
-
-        window.addEventListener('beforeunload', handleBeforeUnload);
-
-        return () => {
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-        };
-    }, []); // Empty dependency array means this effect runs once on mount and cleans up on unmount.
 
     const handleSaveAccountForm = (accountToSave: Omit<Account, 'id'> & { id?: number }) => {
         if (accountToSave.id) {

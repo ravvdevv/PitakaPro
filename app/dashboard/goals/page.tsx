@@ -1,11 +1,12 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Layout from "@/components/dashboard-ui/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Goal = {
     id: number;
@@ -23,7 +24,7 @@ const getInitialGoals = (): Goal[] => {
         return JSON.parse(storedGoals);
       } catch (e) {
         console.error("Failed to parse goals from localStorage", e);
-        localStorage.removeItem("goals"); // Clear corrupted data
+        localStorage.removeItem("goals");
       }
     }
   }
@@ -31,13 +32,11 @@ const getInitialGoals = (): Goal[] => {
 };
 
 export default function GoalsPage() {
-    const [goals, setGoals] = useState<Goal[]>(getInitialGoals());
+    // Use custom hook for better performance
+    const [goals, setGoals] = useLocalStorage<Goal[]>("goals", []);
     const [newGoalName, setNewGoalName] = useState("");
     const [newGoalTotal, setNewGoalTotal] = useState(0);
     const [addAmounts, setAddAmounts] = useState<Record<number, number>>({});
-    useEffect(() => {
-        localStorage.setItem("goals", JSON.stringify(goals));
-    }, [goals]);
 
     const handleAddGoal = () => {
         if (newGoalName && newGoalTotal > 0) {
