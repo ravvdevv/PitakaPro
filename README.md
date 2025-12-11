@@ -1,4 +1,5 @@
 <div align="center">
+  <img src="https://raw.githubusercontent.com/ravvdevv/PitakaPro/main/public/pitaka-pro-logo.png" alt="PitakaPro Logo" width="200" style="margin-bottom: 1rem;">
   <h1>💼 PitakaPro</h1>
   <h3>✨ Modern Personal Finance Management</h3>
   
