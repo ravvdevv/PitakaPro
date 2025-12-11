@@ -1,8 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { Wallet, PiggyBank, TrendingUp, TrendingDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Account = {
   id: number;
@@ -33,76 +34,24 @@ type Goal = {
 };
 
 export default function Content() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [allAccounts, setAllAccounts] = useState<Account[]>([]);
-  const [currentAccountBalances, setCurrentAccountBalances] = useState<Record<string, number>>({});
-  const [totalIncome, setTotalIncome] = useState(0);
-  const [totalExpense, setTotalExpense] = useState(0);
-  const [netWorth, setNetWorth] = useState(0);
-  const [budgets, setBudgets] = useState<Budget[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
+  // Use custom hook for localStorage management
+  const [transactions] = useLocalStorage<Transaction[]>("transactions", []);
+  const [allAccounts] = useLocalStorage<Account[]>("accounts", []);
+  const [budgets] = useLocalStorage<Budget[]>("budgets", []);
+  const [goals] = useLocalStorage<Goal[]>("goals", []);
 
-  useEffect(() => {
-    const storedTransactions = localStorage.getItem("transactions");
-    const storedAccounts = localStorage.getItem("accounts");
-    const storedBudgets = localStorage.getItem("budgets");
-    const storedGoals = localStorage.getItem("goals");
-
-    let parsedTransactions: Transaction[] = [];
-    if (storedTransactions) {
-      try {
-        parsedTransactions = JSON.parse(storedTransactions);
-      } catch (e) {
-        console.error("Failed to parse transactions from localStorage in Content", e);
-        localStorage.removeItem("transactions");
-      }
-    }
-
-    let parsedAccounts: Account[] = [];
-    if (storedAccounts) {
-      try {
-        parsedAccounts = JSON.parse(storedAccounts);
-      } catch (e) {
-        console.error("Failed to parse accounts from localStorage in Content", e);
-        localStorage.removeItem("accounts");
-      }
-    }
-
-    let parsedBudgets: Budget[] = [];
-    if (storedBudgets) {
-      try {
-        parsedBudgets = JSON.parse(storedBudgets);
-      } catch (e) {
-        console.error("Failed to parse budgets from localStorage in Content", e);
-        localStorage.removeItem("budgets");
-      }
-    }
-
-    let parsedGoals: Goal[] = [];
-    if (storedGoals) {
-      try {
-        parsedGoals = JSON.parse(storedGoals);
-      } catch (e) {
-        console.error("Failed to parse goals from localStorage in Content", e);
-        localStorage.removeItem("goals");
-      }
-    }
-
-    setTransactions(parsedTransactions);
-    setAllAccounts(parsedAccounts);
-    setBudgets(parsedBudgets);
-    setGoals(parsedGoals);
-
+  // Memoize expensive calculations to avoid recomputation on every render
+  const { totalIncome, totalExpense, currentAccountBalances } = useMemo(() => {
     let income = 0;
     let expense = 0;
     const accountBalances: Record<string, number> = {};
 
     // Initialize account balances with initial balances
-    parsedAccounts.forEach((acc) => {
+    allAccounts.forEach((acc) => {
       accountBalances[acc.name] = acc.initialBalance;
     });
 
-    parsedTransactions.forEach((t) => {
+    transactions.forEach((t) => {
       if (t.type === "income") {
         income += t.amount;
       } else {
@@ -114,22 +63,27 @@ export default function Content() {
       }
     });
 
-    const totalInitialAccountBalance = parsedAccounts.reduce(
+    return { totalIncome: income, totalExpense: expense, currentAccountBalances: accountBalances };
+  }, [transactions, allAccounts]);
+
+  const netWorth = useMemo(() => {
+    const totalInitialAccountBalance = allAccounts.reduce(
       (sum, acc) => sum + (acc.initialBalance || 0),
       0
     );
-    const netFlow = income - expense;
-    const totalBalance = totalInitialAccountBalance + netFlow;
-
-    setTotalIncome(income);
-    setTotalExpense(expense);
-    setCurrentAccountBalances(accountBalances);
-    setNetWorth(totalBalance);
-  }, []);
+    const netFlow = totalIncome - totalExpense;
+    return totalInitialAccountBalance + netFlow;
+  }, [allAccounts, totalIncome, totalExpense]);
   
-  const totalBudgetAmount = budgets.reduce((sum, b) => sum + (b.total || 0), 0);
-  const totalGoalsTarget = goals.reduce((sum, g) => sum + (g.total || 0), 0);
-  const totalGoalsSaved = goals.reduce((sum, g) => sum + (g.saved || 0), 0);
+  const totalBudgetAmount = useMemo(() => 
+    budgets.reduce((sum, b) => sum + (b.total || 0), 0),
+    [budgets]
+  );
+  
+  const { totalGoalsTarget, totalGoalsSaved } = useMemo(() => ({
+    totalGoalsTarget: goals.reduce((sum, g) => sum + (g.total || 0), 0),
+    totalGoalsSaved: goals.reduce((sum, g) => sum + (g.saved || 0), 0)
+  }), [goals]);
 
   return (
     <div className="space-y-8">
