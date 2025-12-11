@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,13 +63,9 @@ export default function TransactionForm({ onClose, onSave, type, transaction }: 
     onSave(newTransaction);
   };
 
-  // Memoize title calculation
-  const title = useMemo(() => 
-    transaction 
-      ? (type === 'expense' ? 'Edit Expense' : 'Edit Income')
-      : (type === 'expense' ? 'Add Expense' : 'Add Income'),
-    [transaction, type]
-  );
+  const title = transaction 
+    ? (type === 'expense' ? 'Edit Expense' : 'Edit Income')
+    : (type === 'expense' ? 'Add Expense' : 'Add Income');
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
