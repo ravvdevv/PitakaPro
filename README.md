@@ -1,7 +1,15 @@
-<div align="center">
-  <img src="https://raw.githubusercontent.com/ravvdevv/PitakaPro/main/public/pitaka-pro-logo.png" alt="PitakaPro Logo" width="200" style="margin-bottom: 1rem;">
-  <h1>💼 PitakaPro</h1>
-  <h3>✨ Modern Personal Finance Management</h3>
+<div align="center" style="padding: 2rem 1rem 1.5rem;">
+  <div style="margin-bottom:">
+    <img 
+      src="https://raw.githubusercontent.com/ravvdevv/PitakaPro/main/public/pitaka-pro-logo.png" 
+      alt="PitakaPro Logo" 
+      width="180"
+      style="display: block; margin: 0 auto 1.25rem; filter: invert(100%); transition: all 0.3s ease;"
+      onmouseover="this.style.filter='invert(0.5) sepia(1) saturate(5) hue-rotate(175deg)'"
+      onmouseout="this.style.filter='invert(0%)'"
+    > <h1 style="margin: 0; font-size: 2.5rem; font-weight: 700;">PitakaPro</h1>
+    <h3 style="margin: 0.5rem 0 1.5rem; font-weight: 400;">✨ Modern Personal Finance Management</h3>
+   
   
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
   [![Next.js](https://img.shields.io/badge/Next.js-13.4+-000000?style=flat&logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -77,7 +85,7 @@
 Before you begin, ensure you have the following installed:
 
 - Node.js 18+ or [Bun](https://bun.sh/)
-- Package manager: npm, yarn, or [pnpm](https://pnpm.io/) (recommended)
+- Package manager: npm, yarn, or [pnpm](https://pnpm.io/) 
 - Git for version control
 
 ### ⚙️ Installation
@@ -90,12 +98,20 @@ Before you begin, ensure you have the following installed:
 
 2. **Install dependencies** (using pnpm as an example)
    ```bash
+   bun install
+   # or
    pnpm install
+   # or
+   npm install
    ```
 
 3. **Start the development server**
    ```bash
+   bun dev
+   # or
    pnpm dev
+   # or
+   npm run dev
    ```
 
 4. **Open your browser** and navigate to:
@@ -105,18 +121,7 @@ Before you begin, ensure you have the following installed:
 
 5. **Start managing your finances!** 💰✨
 
-### 🧪 Running Tests
 
-```bash
-# Run tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run tests with coverage
-pnpm test:coverage
-```
 
 ## 📁 Project Structure
 
@@ -156,65 +161,8 @@ pitakapro/
 └── tsconfig.json             # TypeScript configuration
 ```
 
-## 📜 Available Scripts
 
 ### Development
-
-```bash
-# Start development server
-pnpm dev
-
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
-
-# Lint code
-pnpm lint
-
-# Format code
-pnpm format
-
-# Run type checking
-pnpm type-check
-```
-
-### Testing
-
-```bash
-# Run tests
-pnpm test
-
-# Run tests in watch mode
-pnpm test:watch
-
-# Run tests with coverage
-pnpm test:coverage
-
-# Run E2E tests
-pnpm test:e2e
-```
-
-### Building
-
-```bash
-# Create a production build
-pnpm build
-
-# Analyze bundle size
-pnpm analyze
-```
-
-### Other
-
-```bash
-# Generate component documentation
-pnpm docz:dev
-
-# Run storybook
-pnpm storybook
-```
 
 ## 🤝 Contributing
 
@@ -251,15 +199,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Inspired by modern financial applications
 - Thanks to all contributors who have helped improve this project
 
-## 📬 Contact
-
-Have questions or feedback? [Open an issue](https://github.com/yourusername/yourproject/issues) or reach out to us at [your.email@example.com](mailto:your.email@example.com)
-
 ---
 
 <div align="center">
-  Made with ❤️ by [Your Name](https://github.com/yourusername) | [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fyourproject)](https://twitter.com/intent/tweet?text=Check%20out%20this%20awesome%20project!&url=https%3A%2F%2Fgithub.com%2Fyourusername%2Fyourproject)
+  Made with ❤️ by [Raven](https://github.com/ravvdevv) 
 </div>
+
 ## Acknowledgements
 
 - Built with [Next.js](https://nextjs.org/)
