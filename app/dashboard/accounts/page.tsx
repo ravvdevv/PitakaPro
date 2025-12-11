@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Layout from "@/components/dashboard-ui/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,26 +22,10 @@ type Transaction = {
     account?: string;
 };
 
-// Helper function to get initial transactions from localStorage  
-const getInitialTransactions = (): Transaction[] => {
-  if (typeof window !== 'undefined') {
-    const storedTransactions = localStorage.getItem("transactions");
-    if (storedTransactions) {
-      try {
-        return JSON.parse(storedTransactions);
-      } catch (e) {
-        console.error("Failed to parse transactions from localStorage", e);
-        localStorage.removeItem("transactions");
-      }
-    }
-  }
-  return [];
-};
-
 export default function AccountsPage() {
     // Use custom hook for better performance
     const [accounts, setAccounts] = useLocalStorage<Account[]>("accounts", []);
-    const [transactions, setTransactions] = useState<Transaction[]>(getInitialTransactions());
+    const [transactions, setTransactions] = useLocalStorage<Transaction[]>("transactions", []);
     const [editingAccount, setEditingAccount] = useState<Account | null>(null);
     const [showAccountForm, setShowAccountForm] = useState(false);
 
@@ -54,20 +38,6 @@ export default function AccountsPage() {
         setEditingAccount(account);
         setShowAccountForm(true);
     };
-
-    // Load transactions from localStorage on mount
-    useEffect(() => {
-        const storedTransactions = localStorage.getItem("transactions");
-        if (storedTransactions) {
-            try {
-                setTransactions(JSON.parse(storedTransactions));
-            } catch (e) {
-                console.error("Failed to parse transactions from localStorage", e);
-                localStorage.removeItem("transactions");
-                setTransactions([]);
-            }
-        }
-    }, []);
 
     const handleSaveAccountForm = (accountToSave: Omit<Account, 'id'> & { id?: number }) => {
         if (accountToSave.id) {

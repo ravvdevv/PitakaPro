@@ -22,26 +22,10 @@ type Transaction = {
     date: string;
 };
 
-// Helper function to get initial transactions from localStorage
-const getInitialTransactions = (): Transaction[] => {
-  if (typeof window !== 'undefined') {
-    const storedTransactions = localStorage.getItem("transactions");
-    if (storedTransactions) {
-      try {
-        return JSON.parse(storedTransactions);
-      } catch (e) {
-        console.error("Failed to parse transactions from localStorage", e);
-        localStorage.removeItem("transactions");
-      }
-    }
-  }
-  return [];
-};
-
 export default function BudgetsPage() {
     // Use custom hook for better performance
     const [budgets, setBudgets] = useLocalStorage<Budget[]>("budgets", []);
-    const [transactions] = useState<Transaction[]>(getInitialTransactions());
+    const [transactions] = useLocalStorage<Transaction[]>("transactions", []);
     const [newBudgetCategory, setNewBudgetCategory] = useState("");
     const [newBudgetTotal, setNewBudgetTotal] = useState(0);
 
