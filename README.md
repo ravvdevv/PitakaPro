@@ -9,7 +9,7 @@
 
   <p>Take control of your finances with PitakaPro - A beautiful, intuitive, and powerful personal finance management application built with modern web technologies. Track expenses, manage budgets, and achieve your financial goals with ease.</p>
   
-  [🚀 Live Demo](#) | [📖 Documentation](#) | [💡 Feature Request](https://github.com/ravvdevv/PitakaPro/issues/new?template=feature_request.md)
+  [🚀 Live Demo](https://pitaka-pro.vercel.app/) | [📖 Documentation](#) | [💡 Feature Request](https://github.com/ravvdevv/PitakaPro/issues/new?template=feature_request.md)
 </div>
 
 ## ✨ Features
