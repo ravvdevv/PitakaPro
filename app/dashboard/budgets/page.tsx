@@ -1,11 +1,12 @@
 "use client"
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Layout from "@/components/dashboard-ui/layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Budget = {
     id: number;
@@ -21,49 +22,12 @@ type Transaction = {
     date: string;
 };
 
-// Helper function to get initial budgets from localStorage
-const getInitialBudgets = (): Budget[] => {
-  if (typeof window !== 'undefined') {
-    const storedBudgets = localStorage.getItem("budgets");
-    if (storedBudgets) {
-      try {
-        return JSON.parse(storedBudgets);
-      } catch (e) {
-        console.error("Failed to parse budgets from localStorage", e);
-        localStorage.removeItem("budgets"); // Clear corrupted data
-      }
-    }
-  }
-  return [];
-};
-
-// Helper function to get initial transactions from localStorage
-const getInitialTransactions = (): Transaction[] => {
-  if (typeof window !== 'undefined') {
-    const storedTransactions = localStorage.getItem("transactions");
-    if (storedTransactions) {
-      try {
-        return JSON.parse(storedTransactions);
-      } catch (e) {
-        console.error("Failed to parse transactions from localStorage", e);
-        localStorage.removeItem("transactions"); // Clear corrupted data
-      }
-    }
-  }
-  return [];
-};
-
 export default function BudgetsPage() {
-    const [budgets, setBudgets] = useState<Budget[]>(getInitialBudgets());
-    const [transactions, setTransactions] = useState<Transaction[]>(getInitialTransactions());
+    // Use custom hook for better performance
+    const [budgets, setBudgets] = useLocalStorage<Budget[]>("budgets", []);
+    const [transactions] = useLocalStorage<Transaction[]>("transactions", []);
     const [newBudgetCategory, setNewBudgetCategory] = useState("");
     const [newBudgetTotal, setNewBudgetTotal] = useState(0);
-
-
-
-    useEffect(() => {
-        localStorage.setItem("budgets", JSON.stringify(budgets));
-    }, [budgets]);
 
     const handleAddBudget = () => {
         if (newBudgetCategory && newBudgetTotal > 0) {
@@ -78,19 +42,24 @@ export default function BudgetsPage() {
         }
     };
 
-    const getSpentAmount = (category: string) => {
+    // Memoize spent amount calculation to avoid recalculating on every render
+    const spentByCategory = useMemo(() => {
         const now = new Date();
         const currentMonth = now.getMonth();
         const currentYear = now.getFullYear();
 
-        return transactions
-            .filter(t => {
-                if (t.category !== category || t.type !== 'expense') return false;
-                const d = new Date(t.date);
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            })
-            .reduce((acc, t) => acc + Math.abs(t.amount), 0);
-    };
+        const spent: Record<string, number> = {};
+        
+        transactions.forEach(t => {
+            if (t.type !== 'expense') return;
+            const d = new Date(t.date);
+            if (d.getMonth() === currentMonth && d.getFullYear() === currentYear) {
+                spent[t.category] = (spent[t.category] || 0) + Math.abs(t.amount);
+            }
+        });
+        
+        return spent;
+    }, [transactions]);
 
     return (
         <Layout>
@@ -118,7 +87,7 @@ export default function BudgetsPage() {
 
                 <div className="space-y-4">
                     {budgets.map(budget => {
-                        const spent = getSpentAmount(budget.category);
+                        const spent = spentByCategory[budget.category] || 0;
                         const remaining = budget.total - spent;
                         const overBudget = remaining < 0;
                         const progress = budget.total > 0 ? (spent / budget.total) * 100 : 0;

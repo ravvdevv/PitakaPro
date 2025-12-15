@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import TransactionForm from "./transaction-form";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { categories } from "@/lib/data";
 import { Empty, EmptyHeader, EmptyTitle, EmptyDescription } from "@/components/ui/empty";
 import { Badge } from "@/components/ui/badge";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 
 type Transaction = {
@@ -28,8 +29,10 @@ type Account = {
 };
 
 export default function TransactionList() {
-  const [transactions, setTransactions] = useState<Transaction[] | null>(null);
-  const [accounts, setAccounts] = useState<Account[]>([]);
+  // Use custom hook for localStorage management - reduces redundant reads/writes
+  const [transactions, setTransactions] = useLocalStorage<Transaction[]>("transactions", []);
+  const [accounts] = useLocalStorage<Account[]>("accounts", []);
+  
   const [isFormVisible, setIsFormVisible] = useState(false);
   const [formType, setFormType] = useState<"income" | "expense">("expense");
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
@@ -38,83 +41,6 @@ export default function TransactionList() {
   const [filterDate, setFilterDate] = useState<string>("");
   const [showFilters, setShowFilters] = useState<boolean>(false);
 
-  // Load transactions on first mount
-  useEffect(() => {
-    const storedTransactions = localStorage.getItem("transactions");
-    if (storedTransactions) {
-      try {
-        const parsed: any[] = JSON.parse(storedTransactions);
-
-        const normalized: Transaction[] = parsed.map((t) => {
-          let amount = Number(t.amount ?? 0);
-          let type: "income" | "expense";
-
-          if (t.type === "income" || t.type === "expense") {
-            type = t.type;
-          } else {
-            // Infer type from sign if missing
-            type = amount < 0 ? "expense" : "income";
-          }
-
-          // Ensure amount sign matches type convention
-          if (type === "expense" && amount > 0) {
-            amount = -Math.abs(amount);
-          }
-          if (type === "income" && amount < 0) {
-            amount = Math.abs(amount);
-          }
-
-          return {
-            id: Number(t.id),
-            date: t.date ?? "",
-            category: t.category ?? "",
-            note: t.note ?? "",
-            amount,
-            type,
-          };
-        });
-
-        setTransactions(normalized);
-        localStorage.setItem("transactions", JSON.stringify(normalized));
-      } catch (e) {
-        console.error("Failed to parse transactions from localStorage", e);
-        localStorage.removeItem("transactions"); // Clear corrupted data
-        setTransactions([]);
-      }
-    } else {
-      setTransactions([]);
-    }
-  }, []);
-
-  // Load accounts on first mount
-  useEffect(() => {
-    const storedAccounts = localStorage.getItem("accounts");
-    if (storedAccounts) {
-      try {
-        const parsed: any[] = JSON.parse(storedAccounts);
-        const normalized: Account[] = parsed.map((a) => ({
-          id: Number(a.id),
-          name: String(a.name ?? ""),
-          initialBalance: Number(a.initialBalance ?? 0),
-        }));
-        setAccounts(normalized);
-      } catch (e) {
-        console.error("Failed to parse accounts from localStorage", e);
-        localStorage.removeItem("accounts");
-        setAccounts([]);
-      }
-    } else {
-      setAccounts([]);
-    }
-  }, []);
-
-  // Persist transactions whenever they change (but only after initial load)
-  useEffect(() => {
-    if (transactions !== null) {
-      localStorage.setItem("transactions", JSON.stringify(transactions));
-    }
-  }, [transactions]);
-
   const openForm = (type: "income" | "expense", transaction: Transaction | null = null) => {
     setFormType(type);
     setEditingTransaction(transaction);
@@ -122,25 +48,23 @@ export default function TransactionList() {
   };
 
   const handleDelete = (id: number) => {
-    if (!transactions) return;
     setTransactions(transactions.filter(t => t.id !== id));
   };
   
   const handleSave = (transaction: Omit<Transaction, 'id'> & { id?: number }) => {
-    if (transaction.id && transactions) {
+    if (transaction.id) {
       // Edit
       setTransactions(transactions.map(t => t.id === transaction.id ? transaction as Transaction : t));
     } else {
       // Add
       const newTransaction = { ...transaction, id: Date.now() } as Transaction;
-      setTransactions([newTransaction, ...(transactions ?? [])]);
+      setTransactions([newTransaction, ...transactions]);
     }
     setIsFormVisible(false);
   };
 
   const filteredTransactions = useMemo(() => {
-    const list = transactions ?? [];
-    return list.filter(t => {
+    return transactions.filter(t => {
       const categoryMatch = !filterCategory || filterCategory === "all" || t.category.toLowerCase() === filterCategory;
       const dateMatch = filterDate ? t.date === filterDate : true;
       return categoryMatch && dateMatch;

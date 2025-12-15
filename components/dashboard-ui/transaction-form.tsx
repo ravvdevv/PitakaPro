@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories as allCategories } from "@/lib/data";
+import { useLocalStorage } from "@/hooks/use-local-storage";
 
 type Account = {
   id: number;
@@ -35,7 +36,9 @@ export default function TransactionForm({ onClose, onSave, type, transaction }: 
   const [category, setCategory] = useState("");
   const [account, setAccount] = useState("");
   const [note, setNote] = useState("");
-  const [availableAccounts, setAvailableAccounts] = useState<Account[]>([]);
+  
+  // Use custom hook for better performance
+  const [availableAccounts] = useLocalStorage<Account[]>("accounts", []);
 
   useEffect(() => {
     if (transaction) {
@@ -46,19 +49,6 @@ export default function TransactionForm({ onClose, onSave, type, transaction }: 
       setAccount(transaction.account || "");
     }
   }, [transaction]);
-
-  useEffect(() => {
-    const storedAccounts = localStorage.getItem("accounts");
-    if (storedAccounts) {
-      try {
-        setAvailableAccounts(JSON.parse(storedAccounts));
-      } catch (e) {
-        console.error("Failed to parse accounts from localStorage in TransactionForm", e);
-        localStorage.removeItem("accounts");
-        setAvailableAccounts([]);
-      }
-    }
-  }, []);
 
   const handleSave = () => {
     const newTransaction = {
