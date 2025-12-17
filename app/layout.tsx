@@ -8,7 +8,8 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "PitakaPro",
   description: "A modern financial dashboard for professional money management",
-    generator: 'v0.app'
+    generator: 'v0.app',
+  manifest: "/manifest.json",
 }
 
 export default function RootLayout({
