@@ -1,9 +1,11 @@
 "use client";
 import { useMemo, useState, useEffect } from "react";
-import { Wallet, PiggyBank, TrendingUp, TrendingDown, PieChart } from "lucide-react";
+import { Wallet, PiggyBank, TrendingUp, TrendingDown, PieChart, WifiOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useNetworkStatus } from "@/hooks/use-network-status";
+import { storageKeys, getOfflineData, setOfflineData } from "@/lib/data";
 
 type Account = {
   id: number;
@@ -30,9 +32,10 @@ type Goal = {
 
 export default function Content() {
   // Use custom hook for localStorage management
-  const [transactions] = useLocalStorage<Transaction[]>("transactions", []);
-  const [allAccounts] = useLocalStorage<Account[]>("accounts", []);
-  const [goals] = useLocalStorage<Goal[]>("goals", []);
+  const [transactions] = useLocalStorage<Transaction[]>(storageKeys.transactions, []);
+  const [allAccounts] = useLocalStorage<Account[]>(storageKeys.accounts, []);
+  const [goals] = useLocalStorage<Goal[]>(storageKeys.goals, []);
+  const { isOnline } = useNetworkStatus();
 
   // Memoize expensive calculations to avoid recomputation on every render
   const { totalIncome, totalExpense, currentAccountBalances } = useMemo(() => {
@@ -93,10 +96,20 @@ export default function Content() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-1">
-          {getGreeting()}{username ? `, ${username}` : ''}!
-        </h1> 
-        <p className="text-sm text-muted-foreground">A quick snapshot of your money right now.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground mb-1">
+              {getGreeting()}{username ? `, ${username}` : ''}!
+            </h1> 
+            <p className="text-sm text-muted-foreground">A quick snapshot of your money right now.</p>
+          </div>
+          {!isOnline && (
+            <div className="flex items-center gap-2 px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">
+              <WifiOff className="w-4 h-4" />
+              <span>Offline Mode</span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Summary cards powered by localStorage */}
