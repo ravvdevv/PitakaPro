@@ -1,6 +1,6 @@
 "use client";
-import { useMemo } from "react";
-import { Wallet, PiggyBank, TrendingUp, TrendingDown } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Wallet, PiggyBank, TrendingUp, TrendingDown, PieChart } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { useLocalStorage } from "@/hooks/use-local-storage";
@@ -20,11 +20,6 @@ type Transaction = {
   type: "income" | "expense";
   account?: string;
 };
-type Budget = {
-  id: number;
-  category: string;
-  total: number;
-};
 
 type Goal = {
   id: number;
@@ -37,7 +32,6 @@ export default function Content() {
   // Use custom hook for localStorage management
   const [transactions] = useLocalStorage<Transaction[]>("transactions", []);
   const [allAccounts] = useLocalStorage<Account[]>("accounts", []);
-  const [budgets] = useLocalStorage<Budget[]>("budgets", []);
   const [goals] = useLocalStorage<Goal[]>("goals", []);
 
   // Memoize expensive calculations to avoid recomputation on every render
@@ -75,40 +69,38 @@ export default function Content() {
     return totalInitialAccountBalance + netFlow;
   }, [allAccounts, totalIncome, totalExpense]);
   
-  const totalBudgetAmount = useMemo(() => 
-    budgets.reduce((sum, b) => sum + (b.total || 0), 0),
-    [budgets]
-  );
-  
+
   const { totalGoalsTarget, totalGoalsSaved } = useMemo(() => ({
     totalGoalsTarget: goals.reduce((sum, g) => sum + (g.total || 0), 0),
     totalGoalsSaved: goals.reduce((sum, g) => sum + (g.saved || 0), 0)
   }), [goals]);
 
+  const [username, setUsername] = useState('');
+  
+  useEffect(() => {
+    // Get username from localStorage
+    const savedName = localStorage.getItem('userName') || '';
+    setUsername(savedName);
+  }, []);
+  
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-1">Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-1">
+          {getGreeting()}{username ? `, ${username}` : ''}!
+        </h1> 
         <p className="text-sm text-muted-foreground">A quick snapshot of your money right now.</p>
       </div>
 
-      {/* Hero total balance */}
-      <div className="flex items-baseline justify-between rounded-lg border bg-card px-4 py-3">
-        <div className="space-y-0.5">
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Total balance</p>
-          <p className="text-xs text-muted-foreground">All accounts after income and expenses</p>
-        </div>
-        <div
-          className={`text-2xl font-semibold ${
-            netWorth >= 0 ? "text-green-500" : "text-red-500"
-          }`}
-        >
-          ₱{netWorth.toFixed(2)}
-        </div>
-      </div>
-
       {/* Summary cards powered by localStorage */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
             <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Balance</CardTitle>
@@ -139,16 +131,7 @@ export default function Content() {
             <p className="text-xs text-muted-foreground">Total spending (all time)</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Budgets</CardTitle>
-            <Wallet className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold">{budgets.length}</div>
-            <p className="text-xs text-muted-foreground">Total budgeted this month: ₱{totalBudgetAmount.toFixed(2)}</p>
-          </CardContent>
-        </Card>
+     
       </div>
 
       {/* Accounts, budgets, goals, and recent activity */}
@@ -167,32 +150,14 @@ export default function Content() {
               <div key={account.id} className="flex items-center justify-between text-sm">
                 <span>{account.name}</span>
                 <span className="font-medium">
-                  ${(currentAccountBalances[account.name] || 0).toFixed(2)}
+                  ₱{(currentAccountBalances[account.name] || 0).toFixed(2)}
                 </span>
               </div>
             ))}
           </CardContent>
         </Card>
 
-        {/* Budgets */}
-        <Card className="md:col-span-1 lg:col-span-1">
-          <CardHeader>
-            <CardTitle>Budgets</CardTitle>
-            <CardDescription className="text-xs">Summary from your Budgets page</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {budgets.length === 0 && (
-              <p className="text-sm text-muted-foreground">No budgets yet.</p>
-            )}
-            {budgets.map((b) => (
-              <div key={b.id} className="flex items-center justify-between text-sm">
-                <span>{b.category}</span>
-                <span className="font-medium">₱{b.total.toFixed(2)}</span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
+     
         {/* Goals */}
         <Card className="md:col-span-1 lg:col-span-1">
           <CardHeader>
@@ -231,7 +196,7 @@ export default function Content() {
                 <TableHeader>
                     <TableRow>
                         <TableHead>Category</TableHead>
-                        <TableHead>Note</TableHead>
+                        <TableHead className="hidden sm:table-cell">Note</TableHead>
                         <TableHead className="text-right">Amount</TableHead>
                     </TableRow>
                 </TableHeader>
@@ -239,8 +204,8 @@ export default function Content() {
                     {transactions.slice(0, 5).map(t => (
                         <TableRow key={t.id}>
                             <TableCell>{t.category}</TableCell>
-                            <TableCell>{t.note}</TableCell>
-                            <TableCell className={`text-right ${t.type === 'income' ? 'text-green-500' : ''}`}>{t.amount.toFixed(2)}</TableCell>
+                            <TableCell className="hidden sm:table-cell">{t.note}</TableCell>
+                            <TableCell className={`text-right ${t.type === 'income' ? 'text-green-500' : ''}`}>₱{t.amount.toFixed(2)}</TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
