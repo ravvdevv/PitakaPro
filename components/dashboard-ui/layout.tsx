@@ -5,7 +5,6 @@ import Sidebar from "./sidebar"
 import TopNav from "./top-nav"
 import BottomNav from "./bottom-nav"
 import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
 
 interface LayoutProps {
   children: ReactNode
@@ -13,15 +12,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const { theme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return null
-  }
 
   return (
     <div className={`flex h-screen ${theme === "dark" ? "dark" : ""}`}>

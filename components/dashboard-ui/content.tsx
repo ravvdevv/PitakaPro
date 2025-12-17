@@ -7,6 +7,13 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useNetworkStatus } from "@/hooks/use-network-status";
 import { storageKeys, getOfflineData, setOfflineData } from "@/lib/data";
 
+type BootState = {
+  userName?: string;
+  theme?: string;
+  lastSaved: number;
+  version: string;
+};
+
 type Account = {
   id: number;
   name: string;
@@ -81,9 +88,24 @@ export default function Content() {
   const [username, setUsername] = useState('');
   
   useEffect(() => {
-    // Get username from localStorage
-    const savedName = localStorage.getItem('userName') || '';
-    setUsername(savedName);
+    // Get username from both boot cache and localStorage
+    const loadUsername = async () => {
+      try {
+        const bootState = await getOfflineData('pitaka-boot-state') as BootState | null;
+        if (bootState?.userName) {
+          setUsername(bootState.userName);
+          return;
+        }
+      } catch (error) {
+        console.warn('Failed to load from boot cache:', error);
+      }
+      
+      // Fallback to localStorage
+      const savedName = localStorage.getItem('userName') || '';
+      setUsername(savedName);
+    };
+    
+    loadUsername();
   }, []);
   
   const getGreeting = () => {
