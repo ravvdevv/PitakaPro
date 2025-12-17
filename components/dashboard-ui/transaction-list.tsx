@@ -94,14 +94,17 @@ export default function TransactionList() {
     transaction: Omit<Transaction, "id"> & { id?: number }
   ) => {
     if (transaction.id) {
-      setTransactions(
-        transactions.map((t) =>
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((t) =>
           t.id === transaction.id ? (transaction as Transaction) : t
         )
       );
     } else {
       const newTransaction = { ...transaction, id: Date.now() } as Transaction;
-      setTransactions([newTransaction, ...transactions]);
+      setTransactions((prevTransactions) => [
+        newTransaction,
+        ...prevTransactions,
+      ]);
     }
     setIsFormVisible(false);
   };
